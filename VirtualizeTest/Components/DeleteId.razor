@@ -1,0 +1,31 @@
+﻿@inject TestViewModel TestViewModel
+
+<div class="modal fade" id="modaldelete" tabindex="-1" data-bs-backdrop="static"data-bs-keyboard="false" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"> Alert!</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" role="alert">
+                    Delete Id @TestViewModel.selectedId?
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="HandleValidSubmit">Delete</button>
+                </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Action<bool> OnUpdate { get; set; }
+
+    private void HandleValidSubmit()
+    {
+        OnUpdate?.Invoke(true);
+    }
+}

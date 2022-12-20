@@ -1,0 +1,81 @@
+﻿@page "/vtest"
+@using System.ComponentModel;
+@using Microsoft.AspNetCore.Components.Web.Virtualization;
+@using VirtualizeTest.ViewModels;
+@using VirtualizeTest.Components;
+@inject TestVirtualViewModel TestVirtualViewModel
+
+<h1>Test</h1>
+
+@if (TestVirtualViewModel.Loading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            <Virtualize @ref="@TestVirtualViewModel.TestContainer" ItemsProvider="@TestVirtualViewModel.LoadTestData" Context="forecast" OverscanCount="5">
+                <ItemContent>
+                <tr>
+                    <td>@forecast.Id</td>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                    <td>
+                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modaldelete1" @onclick="@(() => TestVirtualViewModel.OnSelectedId(forecast.Id))">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                </ItemContent>
+                <Placeholder>
+                    <p>Bitte warten.</p>
+                </Placeholder>
+            </Virtualize>
+        </tbody>
+    </table>
+}
+
+<DeleteVId OnUpdate="@TestVirtualViewModel.ActionStateDelete" />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        TestVirtualViewModel.PropertyChanged += async (sender, e) =>
+        {
+            await InvokeAsync(() =>
+            {
+                try
+                {
+                    StateHasChanged();
+                }
+                catch { }
+            });
+        };
+        await base.OnInitializedAsync();
+    }
+
+    async void OnPropertyChangedHandler(object sender, PropertyChangedEventArgs e)
+    {
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        TestVirtualViewModel.PropertyChanged -= OnPropertyChangedHandler;
+    }
+}
