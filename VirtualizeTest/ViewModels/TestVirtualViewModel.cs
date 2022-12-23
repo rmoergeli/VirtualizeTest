@@ -29,6 +29,8 @@ namespace VirtualizeTest.ViewModels
 
         private async Task ReloadData()
         {
+            Trace.WriteLine("Call RefreshDataAsync()");
+
             await TestContainer?.RefreshDataAsync();
         }
         #endregion
@@ -60,6 +62,8 @@ namespace VirtualizeTest.ViewModels
         {
             await Task.Delay(0);
 
+            Trace.WriteLine("Calling LoadTestData()");
+
             int numDriverItems = Math.Min(request.Count, GetCountFromSql() - request.StartIndex);
 
             Trace.WriteLine(string.Format("Skip <{0}> Take <{1}>", request.StartIndex.ToString("N0"), numDriverItems.ToString("N0")));
@@ -73,6 +77,7 @@ namespace VirtualizeTest.ViewModels
                 await foreach (var item in GetWeatherDataAsync(request.StartIndex, numDriverItems))
                 {
                     results.Add(item);
+                    Trace.WriteLine("LoadTestData " + item.Id);
                 }
 
                 return results;
@@ -168,6 +173,8 @@ namespace VirtualizeTest.ViewModels
                         Trace.WriteLine($"Sql query: DELETE FROM Test WHERE Id = {selectedId};");
 
                         var result = conn.Execute(query, new { Id = selectedId });
+
+                        Trace.WriteLine($"Id {selectedId} deleted from database");
                     }
                 }
                 catch (Exception ex)
